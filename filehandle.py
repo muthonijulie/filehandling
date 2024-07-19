@@ -2,26 +2,21 @@ import os
 import csv
 #initializing the csv fie and confirming if it is present in the directory
 def initialize_csv():
- 
-    if os.path.exists('product.csv'):
-        with open('product.csv', 'w', newline='') as csvfile:
+    if not os.path.exists('product.csv'):
+        with open('product.csv', 'w') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow(['ID','Name', 'Price', 'Quantity'])
+            writer.writerow(['ID', 'Name', 'Price', 'Quantity'])
             print('CSV file created successfully')
-            print("file exists")
-
     else:
-       print("File not found")
-       
-initialize_csv()#calls the function if the file is present  or also if it is not present
-
+        print("File exists")
+#remove the function call to avoid overwriting the existing file
 #add function allows the user to add details
 def add():
-    print("Product Petails:\n")
-    id = input('Enter product ID: ')#the ID allows the user to edit or remove the the product easily without mentioning the prouct item itself and its details
+    print("\nProduct Details:")
+    id = input('\nEnter product ID: ')#the ID allows the user to edit or remove the the product easily without mentioning the prouct item itself and its details
     name = input('Enter product name: ')
-    price = input('Enter product price: ')
-    quantity = input('Enter product quantity: ')
+    price = float(input('Enter product price: '))#added float data type
+    quantity = int(input('Enter product quantity: '))#added int datatype
     
     with open('product.csv','a') as csvfile:#this opens the product,csv file and allows the user to append it
        writer = csv.writer(csvfile)
@@ -32,8 +27,13 @@ def add():
 def view():
   with open('product.csv','r') as csvfile:#this allows the easy to read from the file
       reader = csv.reader(csvfile)
-      for row in reader:
-        print(', '.join(row))
+      products = list(reader)
+        
+      if len(products) == 1:
+            print("No products available.")#display a message if there are no products.
+      else:
+            for row in products:
+                print(', '.join(row))#empty line
 
 #this function allows the user to make updates on the file
 def update():
@@ -41,21 +41,21 @@ def update():
     found = False
     products = []
 
-    with open('product.csv', mode='r') as csvfile:
+    with open('product.csv','r') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
             if row[0] == id:
                 found = True
                 name = input('Enter new product name: ')
-                price = input('Enter new product price: ')
-                quantity = input('Enter new product quantity: ')
+                price = float(input('Enter new product price: '))
+                quantity = int(input('Enter new product quantity: '))
                 products.append([id, name, price, quantity])
             else:
                 products.append(row)#adds product details in a row
 
             
     if found:
-        with open('product.csv', mode='w', newline='') as csvfile:#allows the user to make changes of any details of an item
+        with open('product.csv','w') as csvfile:#allows the user to make changes of any details of an item
             writer = csv.writer(csvfile)
             writer.writerows(products)
         print('Product updated successfully.')
@@ -77,7 +77,7 @@ def delete():
                 products.append(row)
     
     if found:
-        with open('product.csv','w', newline='') as csvfile:
+        with open('product.csv','w') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerows(products)
         print('Product deleted successfully.')
@@ -95,7 +95,7 @@ def main():
         print('3. Update Product')
         print('4. Delete Product')
         print('5. Exit')
-        choice = input('Enter your choice: ')
+        choice = input('Enter your choice:')
         
         if choice == '1':
             add()
